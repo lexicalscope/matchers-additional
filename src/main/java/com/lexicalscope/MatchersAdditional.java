@@ -159,8 +159,9 @@ public class MatchersAdditional {
                            mismatchDescription.appendText(separator).appendText("\t").appendValue(item);
                         }
                      }
+                     return false;
                   }
-                  return false;
+                  return true;
                }
             }
          };

@@ -7,6 +7,7 @@ public class NullTransform<T> implements Transform<T, T> {
    }
 
    @Override public T transform(final T item, final Description mismatchDescription) {
+      mismatchDescription.appendValue(item);
       return item;
    }
 }

@@ -104,6 +104,67 @@ public class MatchersAdditional {
             }
          };
       }
+
+      public Matcher<Iterable<S>> inOrder() {
+         final List<org.hamcrest.Matcher<? super T>> theMatchers = Collections.unmodifiableList(new ArrayList<>(matchers));
+         return new TypeSafeDiagnosingMatcher<Iterable<S>>() {
+            @Override public void describeTo(final Description description) {
+               description.appendText("iterable containing in order: ");
+               final String separator = System.lineSeparator();
+               for (final Matcher<? super T> matcher : theMatchers) {
+                  description.appendText(separator).appendText("\t").appendDescriptionOf(matcher);
+               }
+            }
+
+            @Override protected boolean matchesSafely(
+                  final Iterable<S> items,
+                  final Description mismatchDescription) {
+               mismatchDescription.appendText("iterable containing in order: ");
+               final String separator = System.lineSeparator();
+
+               final List<T> itemsT = new LinkedList<>();
+               for (final S item : items) {
+                  mismatchDescription.appendText(separator).appendText("\t");
+                  itemsT.add(transform.transform(item, mismatchDescription));
+               }
+
+               {
+                  final Iterator<T> itemsIterator = itemsT.iterator();
+                  final Iterator<Matcher<? super T>> matcherIterator = matchers.iterator();
+
+                  while(itemsIterator.hasNext() && matcherIterator.hasNext()) {
+                     final Matcher<? super T> matcher = matcherIterator.next();
+                     final T item = itemsIterator.next();
+                     if(!matcher.matches(item)) {
+                        mismatchDescription.appendText(separator).appendText("expected ").appendDescriptionOf(matcher).appendText("but found ");
+                        matcher.describeMismatch(item, mismatchDescription);
+                        return false;
+                     }
+                  }
+
+                  if(matcherIterator.hasNext() || itemsIterator.hasNext() && !allowUnmatchedItems) {
+                     if(matcherIterator.hasNext()) {
+                        mismatchDescription.appendText(separator);
+                        mismatchDescription.appendText("matchers unmatched: ");
+                        while (matcherIterator.hasNext()) {
+                           final Matcher<? super T> matcher = matcherIterator.next();
+                           mismatchDescription.appendText(separator).appendText("\t").appendDescriptionOf(matcher);
+                        }
+                     }
+                     if(itemsIterator.hasNext() && !allowUnmatchedItems) {
+                        mismatchDescription.appendText(separator);
+                        mismatchDescription.appendText("items unmatched: ");
+                        while (matcherIterator.hasNext()) {
+                           final T item = itemsIterator.next();
+                           mismatchDescription.appendText(separator).appendText("\t").appendValue(item);
+                        }
+                     }
+                  }
+                  return false;
+               }
+            }
+         };
+      }
    }
 
    public static final class TransformMatcherBuilder<T, S> {

@@ -8,7 +8,7 @@
 	</parent>
 	<groupId>com.lexicalscope.hamcrest</groupId>
 	<artifactId>matchers-additional</artifactId>
-	<version>0.0.1</version>
+	<version>0.0.2-SNAPSHOT</version>
 	<name>matchers-additional</name>
 	<url>http://www.lexicalscope.com</url>
 	<description>extra matchers for hamcrest</description>

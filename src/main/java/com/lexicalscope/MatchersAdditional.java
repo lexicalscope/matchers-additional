@@ -1,5 +1,7 @@
 package com.lexicalscope;
 
+import static com.google.common.collect.ObjectArrays.concat;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -230,5 +232,10 @@ public class MatchersAdditional {
 
    public static <T, S> TransformMatcherBuilder<T, S> after(final Transform<T, S> transform) {
       return new TransformMatcherBuilder<>(transform);
+   }
+
+   @SafeVarargs public static <T> Matcher<T> allOf(final Matcher<T> matcher, final Matcher<T> ... matchers)
+   {
+      return Matchers.allOf(concat(matcher, matchers));
    }
 }

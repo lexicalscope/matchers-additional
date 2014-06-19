@@ -234,8 +234,17 @@ public class MatchersAdditional {
       return new TransformMatcherBuilder<>(transform);
    }
 
-   @SafeVarargs public static <T> Matcher<T> allOf(final Matcher<T> matcher, final Matcher<T> ... matchers)
+   @SafeVarargs public static <T> Matcher<T> allOf(final Matcher<? super T> matcher, final Matcher<? super T> ... matchers)
    {
       return Matchers.allOf(concat(matcher, matchers));
+   }
+
+   @SafeVarargs public static <T> Matcher<T> anyOf(final Matcher<? super T> matcher, final Matcher<? super T> ... matchers)
+   {
+      return Matchers.anyOf(concat(matcher, matchers));
+   }
+
+   public static <T> T with(final T var) {
+      return var;
    }
 }

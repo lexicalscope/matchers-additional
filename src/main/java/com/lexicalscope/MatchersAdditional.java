@@ -7,11 +7,13 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.function.Function;
 
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 import org.hamcrest.TypeSafeDiagnosingMatcher;
+import org.hamcrest.TypeSafeMatcher;
 
 public class MatchersAdditional {
    public static final class CollectionMatcherBuilder<T,S> {
@@ -246,5 +248,25 @@ public class MatchersAdditional {
 
    public static <T> T with(final T var) {
       return var;
+   }
+
+   public static <F,P> Matcher<P> featureMatcher(
+           final String featureName,
+           final Function<? super P, ? extends F> extractor,
+           final Matcher<? super F> submatcher) {
+       return new TypeSafeMatcher<P>() {
+           @Override public void describeTo(final Description description) {
+               description.appendText(featureName).appendText(" -> ").appendDescriptionOf(submatcher);
+           }
+
+           @Override protected void describeMismatchSafely(final P item, final Description mismatchDescription) {
+               mismatchDescription.appendText(featureName).appendText(" - > ");
+               submatcher.describeMismatch(extractor.apply(item), mismatchDescription);
+           }
+
+           @Override protected boolean matchesSafely(final P item) {
+               return submatcher.matches(extractor.apply(item));
+           }
+       };
    }
 }

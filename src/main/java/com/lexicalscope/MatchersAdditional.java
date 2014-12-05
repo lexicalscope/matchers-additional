@@ -7,16 +7,11 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
 
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 import org.hamcrest.TypeSafeDiagnosingMatcher;
-import org.hamcrest.TypeSafeMatcher;
 
 public class MatchersAdditional {
    public static final class CollectionMatcherBuilder<T,S> {
@@ -251,44 +246,5 @@ public class MatchersAdditional {
 
    public static <T> T with(final T var) {
       return var;
-   }
-
-   public static <F,P> Matcher<P> featureMatcher(
-           final String featureName,
-           final Function<? super P, ? extends F> extractor,
-           final Matcher<? super F> submatcher) {
-       return new TypeSafeMatcher<P>() {
-           @Override public void describeTo(final Description description) {
-               description.appendText(featureName).appendText(" -> ").appendDescriptionOf(submatcher);
-           }
-
-           @Override protected void describeMismatchSafely(final P item, final Description mismatchDescription) {
-               mismatchDescription.appendText(featureName).appendText(" -> ");
-               submatcher.describeMismatch(extractor.apply(item), mismatchDescription);
-           }
-
-           @Override protected boolean matchesSafely(final P item) {
-               return submatcher.matches(extractor.apply(item));
-           }
-       };
-   }
-
-   public static <P> Matcher<P> matcher(
-           final Consumer<Description> describeTo,
-           final BiConsumer<P, Description> describeMismatch,
-           final Predicate<P> matches) {
-       return new TypeSafeMatcher<P>() {
-           @Override public void describeTo(final Description description) {
-               describeTo.accept(description);
-           }
-
-           @Override protected void describeMismatchSafely(final P item, final Description mismatchDescription) {
-               describeMismatch.accept(item, mismatchDescription);
-           }
-
-           @Override protected boolean matchesSafely(final P item) {
-               return matches.test(item);
-           }
-       };
    }
 }
